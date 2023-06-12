@@ -48,9 +48,9 @@ class Scraping():
             except:
                 break
         
-        quantidade, val_med = Excel().dashboard(valor_lista, nome_lista, fabricante_lista)
+        quantidade, val_med, val_max, nome_max, val_min, nome_min = Excel().dashboard(valor_lista, nome_lista)
         dados = Excel().tabela(nome_lista, fabricante_lista, valor_lista)
-        dash = Excel().tabela_dash(quantidade, val_med)
+        dash = Excel().tabela_dash(quantidade, val_med, val_max, nome_max, val_min, nome_min)
         Excel().salvar_arquivos(self.tipo, self.save,self.nome_arquivo, dados, dash)
         
 
