@@ -1,13 +1,15 @@
 
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-from excel import excel
 import pandas as pd
+from Excel import Excel
 from openpyxl.workbook import Workbook
 
+
+
 class Scraping():
-    def __init__(self, save, nome_arquivo):
-        self.site = r"file:///C:/xampp/htdocs/site/produtos.html"
+    def __init__(self, save, nome_arquivo, tipo):#, save, nome_arquivo
+        self.site = r"https://projetosemds.com.br/jpedro/produtos.html"
         self.map = {
             "nome": {
                 "xpath": "/html/body/main/div/div/div[2]/div[$nome$]/p[1]"
@@ -16,11 +18,12 @@ class Scraping():
                 "xpath": "/html/body/main/div/div/div[2]/div[$valor$]/p[2]"
             },
         }
+        self.tipo = tipo
         self.save = save
         self.nome_arquivo = nome_arquivo
-        options = webdriver.ChromeOptions()
+        options = webdriver.EdgeOptions()
         options.add_argument("--headless")
-        self.driver = webdriver.Chrome(options=options)#options=options
+        self.driver = webdriver.Edge(options=options)#options=options
         self.varrer_site()
         self.driver.close()
     
@@ -38,24 +41,18 @@ class Scraping():
                 nome = n.split("'")[0]
                 fabricante = n.split("'")[1]
                 v = self.driver.find_element(By.XPATH, self.map["valor"]["xpath"].replace("$valor$", f"{i}")).text
-                valor = v.split(" ")[1]
+                valor = v.split(" ")[1].replace(",", ".")
                 nome_lista.append(nome)
                 fabricante_lista.append(fabricante)
-                valor_lista.append(valor) 
+                valor_lista.append(valor)
             except:
                 break
         
-        dados = excel(nome_lista, fabricante_lista, valor_lista)
-        if self.save =="csv":
-            dados.to_csv(f"{self.save}{self.nome_arquivo}.csv", sep=";", index = False)
-        else:
-            dados.to_excel(f"{self.save}{self.nome_arquivo}.xlsx", index = False)
-            dados.to_csv(f"{self.save}{self.nome_arquivo}.csv", sep=";", index = False)
-        nome_lista.clear()
-        fabricante_lista.clear()
-        valor_lista.clear() 
-
-
+        quantidade, val_med = Excel().dashboard(valor_lista, nome_lista, fabricante_lista)
+        dados = Excel().tabela(nome_lista, fabricante_lista, valor_lista)
+        dash = Excel().tabela_dash(quantidade, val_med)
+        Excel().salvar_arquivos(self.tipo, self.save,self.nome_arquivo, dados, dash)
+        
 
 
 #/html/body/main/div/div/div[2]/div[1]/p[1]

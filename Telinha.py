@@ -65,10 +65,11 @@ class Tela():
         self.enSave.place(relx=0.30, rely=0.10, relwidth=0.60, relheight=0.10)
         
     def scraping(self):
+        self.lbStatus.config(text="")
         if not self.enArquivo.get() == "" and not self.enSave.get() == "":
             self.lbStatus.config(text="")
             endereco = self.endereco_valido()
-            Scraping(endereco, self.enArquivo.get())
+            Scraping(endereco, self.enArquivo.get(), self.clicked.get().lower())
             self.lbStatus.config(text="Arquivos criados")
 
         else:
